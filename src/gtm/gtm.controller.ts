@@ -1,5 +1,10 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { GtmService } from './gtm.service';
+
+// GTM path constants, might subject to change
+const ACCOUNT = 'accounts';
+const CONTAINER = 'containers';
+const WORKSPACE = 'workspaces';
 @Controller('gtm')
 export class GtmController {
   constructor(private readonly gtmService: GtmService) {}
@@ -14,7 +19,7 @@ export class GtmController {
   @Get('/accounts/:accountPath')
   async getAccountByPath(@Param('accountPath') accountPath: string) {
     const auth = await this.gtmService.authorize();
-    const path = `accounts/${accountPath}`;
+    const path = `${ACCOUNT}/${accountPath}`;
     const accounts = await this.gtmService.getAccountByPath(auth, path);
     return accounts;
   }
@@ -22,7 +27,7 @@ export class GtmController {
   @Get('/accounts/:accountPath/containers')
   async listContainers(@Param('accountPath') accountPath: string) {
     const auth = await this.gtmService.authorize();
-    const path = `accounts/${accountPath}`;
+    const path = `${ACCOUNT}/${accountPath}`;
     const containers = await this.gtmService.getContainers(auth, path);
     return containers;
   }
@@ -33,7 +38,7 @@ export class GtmController {
     @Param('containerPath') containerPath: string,
   ) {
     const auth = await this.gtmService.authorize();
-    const path = `accounts/${accountPath}/containers/${containerPath}`;
+    const path = `${ACCOUNT}/${accountPath}/${CONTAINER}/${containerPath}`;
     const container = await this.gtmService.getContainerByPath(auth, path);
     return container;
   }
@@ -44,7 +49,7 @@ export class GtmController {
     @Param('containerPath') containerPath: string,
   ) {
     const auth = await this.gtmService.authorize();
-    const path = `accounts/${accountPath}/containers/${containerPath}`;
+    const path = `${ACCOUNT}/${accountPath}/${CONTAINER}/${containerPath}`;
     const workspaces = await this.gtmService.getWorkspaces(auth, path);
     return workspaces;
   }
@@ -58,8 +63,37 @@ export class GtmController {
     @Param('workspacePath') workspacePath: string,
   ) {
     const auth = await this.gtmService.authorize();
-    const path = `accounts/${accountPath}/containers/${containerPath}/workspaces/${workspacePath}`;
+    const path = `${ACCOUNT}/${accountPath}/${CONTAINER}/${containerPath}/${WORKSPACE}}/${workspacePath}`;
     const workspace = await this.gtmService.getWorkspaceByPath(auth, path);
     return workspace;
+  }
+
+  @Get(
+    '/accounts/:accountPath/containers/:containerPath/workspaces/:workspacePath/tags',
+  )
+  async listTags(
+    @Param('accountPath') accountPath: string,
+    @Param('containerPath') containerPath: string,
+    @Param('workspacePath') workspacePath: string,
+  ) {
+    const auth = await this.gtmService.authorize();
+    const path = `${ACCOUNT}/${accountPath}/${CONTAINER}/${containerPath}/${WORKSPACE}/${workspacePath}`;
+    const tags = await this.gtmService.getTags(auth, path);
+    return tags;
+  }
+
+  @Post(
+    '/accounts/:accountPath/containers/:containerPath/workspaces/:workspacePath/tags',
+  )
+  async createTag(
+    @Param('accountPath') accountPath: string,
+    @Param('containerPath') containerPath: string,
+    @Param('workspacePath') workspacePath: string,
+    @Body() tag: any,
+  ) {
+    const auth = await this.gtmService.authorize();
+    const path = `${ACCOUNT}/${accountPath}/${CONTAINER}/${containerPath}/${WORKSPACE}/${workspacePath}`;
+    const tags = await this.gtmService.createTag(auth, path, tag);
+    return tags;
   }
 }

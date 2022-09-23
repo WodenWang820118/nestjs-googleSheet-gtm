@@ -62,4 +62,21 @@ export class GtmService {
     });
     return res.data;
   }
+
+  async getTags(auth: any, path: string) {
+    const gtm = google.tagmanager({ version: 'v2', auth });
+    const res = await gtm.accounts.containers.workspaces.tags.list({
+      parent: path,
+    });
+    return res.data;
+  }
+
+  async createTag(auth: any, path: string, tag: any) {
+    const gtm = google.tagmanager({ version: 'v2', auth });
+    const res = await gtm.accounts.containers.workspaces.tags.create({
+      parent: path,
+      requestBody: tag,
+    });
+    return res.data;
+  }
 }
