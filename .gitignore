@@ -36,5 +36,5 @@ lerna-debug.log*
 
 # Credentials
 token.json
-gtm_client_secret.json
+gtm_client_secrets.json
 .env
