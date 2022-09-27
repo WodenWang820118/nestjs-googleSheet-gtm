@@ -91,9 +91,38 @@ export class GtmController {
     @Param('workspacePath') workspacePath: string,
     @Body() tag: any,
   ) {
+    // see readme for the simple tag body format
     const auth = await this.gtmService.authorize();
     const path = `${ACCOUNT}/${accountPath}/${CONTAINER}/${containerPath}/${WORKSPACE}/${workspacePath}`;
     const tags = await this.gtmService.createTag(auth, path, tag);
     return tags;
+  }
+
+  @Get(
+    '/accounts/:accountPath/containers/:containerPath/workspaces/:workspacePath/triggers',
+  )
+  async listTriggers(
+    @Param('accountPath') accountPath: string,
+    @Param('containerPath') containerPath: string,
+    @Param('workspacePath') workspacePath: string,
+  ) {
+    const auth = await this.gtmService.authorize();
+    const path = `${ACCOUNT}/${accountPath}/${CONTAINER}/${containerPath}/${WORKSPACE}/${workspacePath}`;
+    const triggers = await this.gtmService.getTriggers(auth, path);
+    return triggers;
+  }
+
+  @Get(
+    '/accounts/:accountPath/containers/:containerPath/workspaces/:workspacePath/variables',
+  )
+  async listVariables(
+    @Param('accountPath') accountPath: string,
+    @Param('containerPath') containerPath: string,
+    @Param('workspacePath') workspacePath: string,
+  ) {
+    const auth = await this.gtmService.authorize();
+    const path = `${ACCOUNT}/${accountPath}/${CONTAINER}/${containerPath}/${WORKSPACE}/${workspacePath}`;
+    const variables = await this.gtmService.getVariables(auth, path);
+    return variables;
   }
 }
