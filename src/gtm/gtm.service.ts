@@ -63,6 +63,8 @@ export class GtmService {
     return res.data;
   }
 
+  // ----- gtm tags -----
+
   async getTags(auth: any, path: string) {
     const gtm = google.tagmanager({ version: 'v2', auth });
     const res = await gtm.accounts.containers.workspaces.tags.list({
@@ -79,4 +81,30 @@ export class GtmService {
     });
     return res.data;
   }
+
+  // TODO: update, delete, etc
+
+  // ----- gtm triggers -----
+
+  async getTriggers(auth: any, path: string) {
+    const gtm = google.tagmanager({ version: 'v2', auth });
+    const res = await gtm.accounts.containers.workspaces.triggers.list({
+      parent: path,
+    });
+    return res.data;
+  }
+
+  // TODO: update, delete, etc
+
+  // ----- gtm variables -----
+
+  async getVariables(auth: any, path: string) {
+    const gtm = google.tagmanager({ version: 'v2', auth });
+    const res = await gtm.accounts.containers.workspaces.variables.list({
+      parent: path,
+    });
+    return res.data;
+  }
+
+  // TODO: update, delete, etc
 }
