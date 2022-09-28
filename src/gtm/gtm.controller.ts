@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
 import { GtmService } from './gtm.service';
 
 // GTM path constants, might subject to change
@@ -8,6 +8,8 @@ const WORKSPACE = 'workspaces';
 @Controller('gtm')
 export class GtmController {
   constructor(private readonly gtmService: GtmService) {}
+
+  // GTM REST API, hierarchical path: accounts, containers, workspaces -> tags | triggers | variables
 
   @Get('/accounts')
   async listAccounts() {
@@ -68,6 +70,8 @@ export class GtmController {
     return workspace;
   }
 
+  // tags CRUD operations
+
   @Get(
     '/accounts/:accountPath/containers/:containerPath/workspaces/:workspacePath/tags',
   )
@@ -92,11 +96,27 @@ export class GtmController {
     @Body() tag: any,
   ) {
     // see readme for the simple tag body format
+    console.log(`tag: ${JSON.stringify(tag)}`);
     const auth = await this.gtmService.authorize();
     const path = `${ACCOUNT}/${accountPath}/${CONTAINER}/${containerPath}/${WORKSPACE}/${workspacePath}`;
     const tags = await this.gtmService.createTag(auth, path, tag);
     return tags;
   }
+
+  @Delete('/accounts/:accountPath/containers/:containerPath/workspaces/:workspacePath/tags/:tagPath')
+  async deleteTag(
+    @Param('accountPath') accountPath: string,
+    @Param('containerPath') containerPath: string,
+    @Param('workspacePath') workspacePath: string,
+    @Param('tagPath') tagPath: string,
+  ) {
+    const auth = await this.gtmService.authorize();
+    const path = `${ACCOUNT}/${accountPath}/${CONTAINER}/${containerPath}/${WORKSPACE}/${workspacePath}/tags/${tagPath}`;
+    const tags = await this.gtmService.deleteTag(auth, path);
+    return tags;
+  }
+
+  // triggers CRUD operations
 
   @Get(
     '/accounts/:accountPath/containers/:containerPath/workspaces/:workspacePath/triggers',
@@ -111,6 +131,8 @@ export class GtmController {
     const triggers = await this.gtmService.getTriggers(auth, path);
     return triggers;
   }
+
+  // triggers CRUD operations
 
   @Get(
     '/accounts/:accountPath/containers/:containerPath/workspaces/:workspacePath/variables',

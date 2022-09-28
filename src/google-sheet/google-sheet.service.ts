@@ -42,7 +42,7 @@ export class GoogleSheetService {
     return await auth.getClient();
   }
 
-  async getSheet(auth: JSONClient | Compute, range: string) {
+  async getColData(auth: JSONClient | Compute, range: string) {
     const sheets = google.sheets({ version: 'v4', auth });
     const emptyTable: string[][] = [];
 
@@ -65,13 +65,13 @@ export class GoogleSheetService {
     return process.env.SHEET_NAME;
   }
 
-  async getSpecsRange(): Promise<string> {
+  async getSpecsRange(title: string): Promise<string> {
     const sheetName = this.getSheetName(); // 'Sheet1' to retrive all ranges
     const auth = await this.authorize();
-    const sheet = await this.getSheet(auth, sheetName);
+    const sheet = await this.getColData(auth, sheetName);
 
     for (let col = 0; col < sheet[0].length; col++) {
-      if (sheet[0][col].includes('dataLayer Specs')) {
+      if (sheet[0][col].includes(title)) {
         const startCell = String.fromCharCode(65 + col) + '2';
         const endCell = String.fromCharCode(65 + col) + sheet.length;
         return `${sheetName}!${startCell}:${endCell}`;
@@ -91,14 +91,45 @@ export class GoogleSheetService {
     return rawSpecs;
   }
 
-  getJsonSpecs(rawSpecs: string[]): string {
+  getJsonSpecs(rawSpecs: string[], tagnames: string[]): string {
     const specs = [];
     for (let i = 0; i < rawSpecs.length; i++) {
       const result = this.getSpecs(rawSpecs[i]);
       if (this.isValidJson(result)) {
-        specs.push(JSON.parse(result));
+        const tag = {
+          tagname: tagnames[i],
+          specs: JSON.parse(result),
+        }
+        specs.push(tag);
       }
     }
     return JSON.stringify(specs);
+  }
+
+  async getTagnames(title: string): Promise<string> {
+    const sheetName = this.getSheetName(); // 'Sheet1' to retrive all ranges
+    const auth = await this.authorize();
+    const sheet = await this.getColData(auth, sheetName);
+
+    for (let col = 0; col < sheet[0].length; col++) {
+      if (sheet[0][col].includes(title)) {
+        const startCell = String.fromCharCode(65 + col) + '2';
+        const endCell = String.fromCharCode(65 + col) + sheet.length;
+        return `${sheetName}!${startCell}:${endCell}`;
+      }
+    }
+  }
+
+  getRawTagnames(content: any[][]): string[] {
+    const rawTagnames = [];
+    for (let row = 0; row < content.length; row++) {
+      for (let col = 0; col < content[row].length; col++) {
+        // TODO: for now, just get tag name if not empty
+        if (content[row][col] !== '') {
+          rawTagnames.push(content[row][col]);
+        }
+      }
+    }
+    return rawTagnames;
   }
 }
