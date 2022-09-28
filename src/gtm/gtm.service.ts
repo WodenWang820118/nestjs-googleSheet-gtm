@@ -63,7 +63,7 @@ export class GtmService {
     return res.data;
   }
 
-  // ----- gtm tags -----
+  // tags API operations
 
   async getTags(auth: any, path: string) {
     const gtm = google.tagmanager({ version: 'v2', auth });
@@ -82,9 +82,16 @@ export class GtmService {
     return res.data;
   }
 
-  // TODO: update, delete, etc
+  // TODO: update, etc
+  async deleteTag(auth: any, path: string) {
+    const gtm = google.tagmanager({ version: 'v2', auth });
+    const res = await gtm.accounts.containers.workspaces.tags.delete({
+      path: path,
+    });
+    return res.data;
+  }
 
-  // ----- gtm triggers -----
+  // triggers API operations
 
   async getTriggers(auth: any, path: string) {
     const gtm = google.tagmanager({ version: 'v2', auth });
