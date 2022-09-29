@@ -86,6 +86,8 @@ export class GtmController {
     return tags;
   }
 
+  // FIXME: when posting, asynchronous operation leads to random error with data lost
+  // reference: https://stackoverflow.com/questions/43549223/typeerror-you-provided-an-invalid-object-where-a-stream-was-expected-you-can-p
   @Post(
     '/accounts/:accountPath/containers/:containerPath/workspaces/:workspacePath/tags',
   )
